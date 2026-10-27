@@ -1,0 +1,284 @@
+@use '../../styles/variables' as *;
+@use '../../styles/status' as *;
+
+// Measurements from the exported Sketch SVG (panel frame 591x1024, 24px side padding).
+$panel-width: 591px;
+$panel-accent: #5659ff;
+$field-border: #d8dceb;
+$field-focus: #aaafff;
+$field-placeholder: #a4aac0;
+$error: #d6336c;
+$slide: 220ms;
+
+.panel-root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+
+  &.is-open {
+    pointer-events: auto;
+  }
+}
+
+// Light veil over the page (#F7F9FC at 50%, as in the design)
+.panel-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba($bg-grid, 0.5);
+  opacity: 0;
+  transition: opacity $slide ease;
+
+  .is-open & {
+    opacity: 1;
+  }
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: $panel-width;
+  max-width: 100vw;
+  background: #fff;
+  border-radius: 12px 0 0 12px;
+  box-shadow: -4px 0 24px rgba($text, 0.08);
+  transform: translateX(100%);
+  transition: transform $slide ease;
+  font-family: $font;
+
+  .is-open & {
+    transform: translateX(0);
+  }
+
+  // 83px tall incl. the 1px divider; title block and buttons are vertically centred
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 83px;
+    padding: 0 24px;
+    border-bottom: 1px solid $border;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 24px;
+      font-weight: 700;
+      color: $text-dark;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 24px;
+      color: $text-muted;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  &__body {
+    flex: 1;
+    padding: 23px 24px 24px;
+    overflow-y: auto;
+  }
+
+  &__alert {
+    padding: 10px 12px;
+    border-radius: 5px;
+    background: #fff1f5;
+    border: 1px solid #ffc9d8;
+    color: $error;
+    font-size: 14px;
+  }
+}
+
+.btn {
+  height: 32px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &--secondary {
+    background: #fff;
+    color: $text-dark;
+    box-shadow: 0 1px 4px rgba($text, 0.18);
+  }
+
+  &--primary {
+    min-width: 66px;
+    background: $panel-accent;
+    color: #fff;
+
+    &:hover {
+      background: darken($panel-accent, 6%);
+    }
+  }
+}
+
+// label 17px + 7px gap + 38px control, 24px between fields
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+
+  label {
+    margin-bottom: 7px;
+    font-size: 14px;
+    line-height: 17px;
+    color: $text-muted;
+  }
+
+  input {
+    width: 100%;
+    height: 38px;
+    padding: 0 8px;
+    border: 1px solid $field-border;
+    border-radius: 5px;
+    background: #fff;
+    font: inherit;
+    font-size: 14px;
+    color: $text;
+    outline: none;
+
+    &::placeholder {
+      color: $field-placeholder;
+    }
+
+    // Active state from the design: a 2px #AAAFFF ring OUTSIDE the field, white inside
+    // (the grey border is covered by the fill, so it disappears)
+    &:focus {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px $field-focus;
+    }
+
+    &.has-error {
+      border-color: $error;
+    }
+  }
+
+  &__error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: $error;
+  }
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+}
+
+// react-datepicker popup must float above the panel
+.react-datepicker-popper {
+  z-index: 70 !important;
+}
+
+// ---- status dropdown (react-select) ----
+// The `.panel` prefix raises specificity: react-select injects its own (blue #2684FF) focus and
+// hover styles at runtime, and without it they would win over these rules.
+.panel .status-select {
+  &__control {
+    min-height: 38px;
+    border: 1px solid $field-border;
+    border-radius: 5px;
+    box-shadow: none;
+    background: #fff;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $field-border;
+    }
+
+    // Active (focused / menu open): 2px #AAAFFF ring outside, white inside - same as the inputs
+    &--is-focused,
+    &--is-focused:hover,
+    &--menu-is-open,
+    &--menu-is-open:hover {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px $field-focus;
+    }
+  }
+
+  &__value-container {
+    padding: 0 8px;
+  }
+
+  &__single-value {
+    margin: 0;
+  }
+
+  &__indicators {
+    padding-right: 8px;
+  }
+
+  &__dropdown-indicator {
+    padding: 0;
+  }
+
+  &__menu {
+    margin: 5px 0 0;
+    border: 1px solid rgba($text-muted, 0.1);
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba($text, 0.12);
+    overflow: hidden;
+    z-index: 5;
+  }
+
+  &__menu-list {
+    padding: 13px 0 11px;
+  }
+
+  // Plain 28px rows on a white menu; the selected one is only recoloured (accent text).
+  // Hover/keyboard focus gets a very light tint so the list still gives feedback.
+  &__option {
+    height: 28px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    color: $text-dark;
+    font-size: 14px;
+    cursor: pointer;
+
+    &--is-focused {
+      background: $bg-grid;
+      color: $text;
+    }
+
+    &--is-selected,
+    &--is-selected.status-select__option--is-focused {
+      background: #fff;
+      color: $accent;
+    }
+  }
+}
+
+// Small triangle without a background, like the design
+.select-caret {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: $text-muted;
+}
+
+@media (max-width: 480px) {
+  .panel__header {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 24px;
+  }
+}
