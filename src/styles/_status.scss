@@ -1,0 +1,32 @@
+@use 'variables' as *;
+
+// Status palette from the Sketch export:
+// (bar background, bar border, pill background, pill text)
+$statuses: (
+  'open': (#f2feff, #cefbff, #e4fdff, #00b0bf),
+  'in-progress': (#edeeff, #dee0ff, #d6d8ff, #3e40db),
+  'complete': (#f8fff3, #d1fab3, #e1ffcc, #08a268),
+  'blocked': (#fffcf1, #fff5cf, #fceeb5, #b13600),
+);
+
+// Status pill: 22px high, radius 5, 8px side padding (used in bars and in the status field)
+@mixin pill {
+  display: inline-block;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+}
+
+.status-pill {
+  @include pill;
+
+  @each $name, $c in $statuses {
+    &--#{$name} {
+      background: nth($c, 3);
+      color: nth($c, 4);
+    }
+  }
+}

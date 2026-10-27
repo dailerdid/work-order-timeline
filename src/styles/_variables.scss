@@ -1,0 +1,19 @@
+// Colors and measurements come from the exported Sketch SVGs (1440px frame).
+$text: #030929;
+$text-dark: #2f3059;
+$text-muted: #687196;
+$accent: #3e40db;
+$border: #e6ebf0;
+$bg-grid: #f7f9fc;
+$bg-row-label-hover: #fafbfd;
+$bg-row-hover: #eef0ff;
+$today-line: #d4d7ff;
+$badge-bg: #d4d7ff;
+
+$font: 'Circular-Std', 'Circular Std', -apple-system, 'Segoe UI', sans-serif;
+
+$labels-width: 381px;
+$labels-width-mobile: 150px;
+$header-height: 33px;
+$row-height: 49px;
+$first-row-height: 60px; // taller: leaves room for the "Current ..." badge

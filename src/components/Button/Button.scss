@@ -1,0 +1,24 @@
+@use '../../styles/variables' as *;
+
+// Same height / radius / shadow as the Select control so the two sit together as one toolbar
+.button {
+  height: 25px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(3, 9, 41, 0.12);
+  color: $accent;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: $bg-grid;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: 2px;
+  }
+}
