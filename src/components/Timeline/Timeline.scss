@@ -1,0 +1,256 @@
+@use '../../styles/variables' as *;
+
+// Geometry follows the exported Sketch frame (1440x1024): the table starts 205px from the
+// top and fills the rest of the viewport; only the label column has row separators.
+.timeline {
+  position: relative;
+  height: calc(100vh - 205px);
+  min-height: 420px;
+  overflow: auto;
+  border-top: 1px solid $border;
+  border-left: 1px solid $border;
+  background: $bg-grid;
+
+  // No visible scrollbars: the timeline is scrolled with the mouse wheel / trackpad / drag
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Column flex layout so the label column keeps its white background down to the bottom
+  &__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    min-width: 100%;
+    width: max-content;
+  }
+
+  // ---- header ----
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex: 0 0 auto;
+    height: $header-height;
+    background: #fff;
+    border-bottom: 1px solid $border;
+  }
+
+  &__corner,
+  &__label {
+    position: sticky;
+    left: 0;
+    flex: 0 0 $labels-width;
+    width: $labels-width;
+    padding-left: 32px;
+    background: #fff;
+    border-right: 1px solid $border;
+  }
+
+  &__corner {
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    color: $text-muted;
+  }
+
+  &__columns {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  &__column {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-muted;
+    white-space: nowrap;
+  }
+
+  // ---- body ----
+  &__body {
+    position: relative;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+  }
+
+  &__layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: $labels-width;
+    pointer-events: none;
+  }
+
+  &__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: $border;
+  }
+
+  // The badge is drawn on top of the line's upper end, like the design
+  &__today {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: $today-line;
+    border-radius: 2px;
+  }
+
+  // "Current month/week" / "Today" pill sitting on the first row
+  // Measurements from the exported Sketch layer: 109x22, radius 5, text inset 8px.
+  &__badge {
+    position: absolute;
+    top: -1px;
+    // Above bars (2), the ghost (2) and the hovered row; the sticky label column (4)
+    // and the header (5) still cover it when scrolled underneath them.
+    z-index: 3;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 5px;
+    background: $badge-bg;
+    color: $accent;
+    font-size: 14px;
+    line-height: 22px;
+    white-space: nowrap;
+
+    // "Current month" is the exact 109px design; shorter labels hug their text
+    &--month {
+      width: 109px;
+    }
+  }
+
+  &__row {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    height: $row-height;
+
+    &.is-first {
+      height: $first-row-height;
+    }
+
+    // Empty row that stretches to the bottom so the label column stays white
+    &.is-filler {
+      flex: 1 0 auto;
+      height: auto;
+      min-height: 0;
+    }
+  }
+
+  &__label {
+    // Above everything drawn in the cells (ghost of the first row is 3), under the header (5)
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid $border;
+    background: #fff;
+
+    .is-first & {
+      padding-top: 11px; // text sits in the lower 49px, like the design
+    }
+
+    .is-hovered & {
+      background: $bg-row-label-hover;
+    }
+
+    .is-filler & {
+      border-bottom: 0;
+    }
+  }
+
+  &__cells {
+    position: relative;
+    flex: 0 0 auto;
+    height: 100%;
+    cursor: pointer;
+
+    // Bars sit 5px below the row top; the first row is taller (room for the badge)
+    .is-first & {
+      --bar-top: 11px;
+    }
+
+    // Opaque, like the design: the hovered row covers the grid lines and the today line
+    .is-hovered & {
+      background: $bg-row-hover;
+    }
+
+    .is-filler & {
+      cursor: default;
+    }
+  }
+}
+
+.timeline__clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+// "Click to add dates" ghost (hover) and the fixed block shown while the panel is open
+.ghost {
+  position: absolute;
+  top: var(--bar-top, 5px);
+  z-index: 2;
+  height: 38px;
+  border: 1px solid #c3c7ff;
+  border-radius: 8px;
+  background: rgba(#6570ff, 0.1);
+  pointer-events: none;
+
+  &.is-picked {
+    border-color: $accent;
+  }
+
+  // First row: its tooltip hangs below and must stay above the bars of the next row (z-index 2,
+  // later in the DOM). Still under the sticky labels (4) and the header (5).
+  &.is-first {
+    z-index: 3;
+  }
+
+  // 26px tall tooltip, 5px above the ghost
+  &__tip {
+    position: absolute;
+    bottom: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 8px;
+    border-radius: 8px;
+    background: $text-muted;
+    color: #f9faff;
+    font-size: 14px;
+    line-height: 26px;
+    white-space: nowrap;
+
+    // First row: above it is the header, so the tooltip goes under the ghost instead
+    &.is-below {
+      bottom: auto;
+      top: calc(100% + 5px);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline {
+    &__corner,
+    &__label {
+      flex-basis: $labels-width-mobile;
+      width: $labels-width-mobile;
+      padding-left: 12px;
+    }
+
+    &__layer {
+      left: $labels-width-mobile;
+    }
+  }
+}
