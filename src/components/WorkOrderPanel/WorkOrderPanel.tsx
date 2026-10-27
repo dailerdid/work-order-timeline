@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { SubmitEvent, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import Select, { components, DropdownIndicatorProps, SingleValue } from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -69,7 +69,7 @@ export const WorkOrderPanel = ({ config, onSubmit, onClose }: Props) => {
   // @upgrade: for bigger forms use react-hook-form (or Formik) instead of hand-written state + validation
 
   // Validates first; on any error the panel stays open and shows the messages
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const next = validateWorkOrder({ name, start, end }, orders, workCenterId, excludeDocId);
     setErrors(next);

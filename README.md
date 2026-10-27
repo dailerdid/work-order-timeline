@@ -112,8 +112,8 @@ Redux Toolkit holds the work orders (`add` / `update` / `delete`). A `store.subs
 
 ## Tests
 
-14 tests in 3 suites:
-- `dates.test.ts`, `validation.test.ts` - the pure logic (date math, overlap and validation rules).
+16 tests in 4 suites:
+- `dates.test.ts`, `validation.test.ts`, `persistence.test.ts` - the pure logic (date math, overlap and validation rules, saving to and loading from localStorage).
 - `App.test.tsx` - smoke tests: the app renders, Edit opens the panel and `Esc` closes it, an empty name is rejected, the Today button works, Delete removes an order.
 
 ## Decisions and trade-offs
