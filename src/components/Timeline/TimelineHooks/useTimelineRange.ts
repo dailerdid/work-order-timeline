@@ -23,23 +23,19 @@ export const buildColumns = (
   zoom: Zoom,
   start: Date,
   end: Date,
-  today: Date,
   ppd: number,
 ): TimelineColumn[] => {
   const cols: TimelineColumn[] = [];
 
-  let cur =
-    zoom === 'week' ? startOfWeek(start) : zoom === 'month' ? startOfMonth(start) : startOfDay(start);
+  let cur = zoom === 'week' ? startOfWeek(start) : zoom === 'month' ? startOfMonth(start) : startOfDay(start);
 
   while (cur <= end) {
     let next: Date;
     let label: string;
-    let isCurrent: boolean;
 
     if (zoom === 'day') {
       next = addDays(cur, 1);
       label = formatDate(cur, { weekday: 'short', day: 'numeric' });
-      isCurrent = diffDays(today, cur) === 0;
     } else if (zoom === 'week') {
       next = addDays(cur, 7);
       const last = addDays(cur, 6);
@@ -47,11 +43,9 @@ export const buildColumns = (
         cur.getMonth() === last.getMonth()
           ? `${formatDate(cur, { month: 'short', day: 'numeric' })} – ${last.getDate()}`
           : `${formatDate(cur, { month: 'short', day: 'numeric' })} – ${formatDate(last, { month: 'short', day: 'numeric' })}`;
-      isCurrent = today >= cur && today < next;
     } else {
       next = addMonths(cur, 1);
       label = formatDate(cur, { month: 'short', year: 'numeric' });
-      isCurrent = today.getFullYear() === cur.getFullYear() && today.getMonth() === cur.getMonth();
     }
 
     cols.push({
@@ -59,7 +53,6 @@ export const buildColumns = (
       label,
       offset: diffDays(cur, start) * ppd,
       width: diffDays(next, cur) * ppd,
-      isCurrent,
     });
     cur = next;
   }
@@ -105,7 +98,7 @@ export const useTimelineRange = (zoom: Zoom): TimelineRange =>
       zoom === 'week' ? startOfWeek(rawStart) : zoom === 'month' ? startOfMonth(rawStart) : rawStart;
 
     const pxPerDay = PX_PER_DAY[zoom];
-    const columns = buildColumns(zoom, viewStart, end, today, pxPerDay);
+    const columns = buildColumns(zoom, viewStart, end, pxPerDay);
     const last = columns[columns.length - 1];
 
     return {

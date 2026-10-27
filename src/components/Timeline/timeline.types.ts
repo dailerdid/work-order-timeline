@@ -21,5 +21,4 @@ export interface TimelineColumn {
   /** Left edge in px, relative to the timeline start */
   offset: number;
   width: number;
-  isCurrent: boolean;
 }
